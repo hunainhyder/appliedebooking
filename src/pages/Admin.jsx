@@ -21,7 +21,7 @@ export default function Admin() {
     setLoading(false);
   };
 
-  const ticketPrice = 1500;
+  const ticketPrice = 1600;
   const totalRevenue = bookings.length * ticketPrice;
 
   return (
