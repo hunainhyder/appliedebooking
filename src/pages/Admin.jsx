@@ -8,7 +8,8 @@ export default function Admin() {
   const [bookings, setBookings] = useState([]);
   const [view, setView] = useState("dashboard");
 
-  const ADMIN_PASSWORD = "mysecretpassword"; 
+  const ADMIN_USERNAME = import.meta.env.VITE_APP_USERNAME; 
+  const ADMIN_PASSWORD = import.meta.env.VITE_APP_PASSWORD; 
 
   const handleLogin = () => {
     if (secret === ADMIN_PASSWORD) {
