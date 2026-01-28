@@ -26,7 +26,7 @@ export const api = {
     const url = `${SCRIPT_URL}?action=get_all_bookings&secret=${adminSecret}`;
     const response = await fetch(url, {
       method: "GET",
-      body: JSON.stringify({ action: "mark_attendance", ticketId, adminSecret }),
+      body: JSON.stringify({ adminSecret }),
     });
     return await response.json();
   },
