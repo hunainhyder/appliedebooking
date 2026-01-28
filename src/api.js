@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIibVSaQnLfCt4G7e4et-x67gOlT8wKFVXnSnxtsD6-SgL3ju9fwSenuBVXGQ2eGZcuA/exec"; 
+const SCRIPT_URL = import.meta.env.VITE_API_URL;
 
 export const api = {
   bookTicket: async (formData) => {
