@@ -4,6 +4,7 @@ import { api } from "../api";
 export default function Admin() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
   const adminSecret = import.meta.env.VITE_API_SECRET;
 
   useEffect(() => {
@@ -13,7 +14,8 @@ export default function Admin() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const res = await api.getBookings(adminSecret);
+      // Pass adminSecret or undefined to use default in api.js
+      const res = await api.getBookings(adminSecret || undefined);
       if (res.data) setBookings(res.data);
     } catch (error) {
       console.error("Failed to load bookings", error);
@@ -21,11 +23,49 @@ export default function Admin() {
     setLoading(false);
   };
 
+  const handleStatusChange = async (ticketId, currentStatus, newStatus) => {
+    if (currentStatus === newStatus) return;
+
+    const actionText = newStatus === "Cancelled" ? "cancel" : "re-book";
+    if (!window.confirm(`Are you sure you want to ${actionText} this ticket?`)) {
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      let res;
+      if (newStatus === "Cancelled") {
+        res = await api.cancelTicket(ticketId, adminSecret);
+      } else {
+        res = await api.bookTicketAgain(ticketId, adminSecret);
+      }
+
+      if (res.status === "success") {
+        await loadData(); // Refresh the table
+      } else {
+        alert(res.message || "Failed to update status");
+      }
+    } catch (error) {
+      console.error("Status update failed", error);
+      alert("Error updating status");
+    }
+    setProcessing(false);
+  };
+
   const ticketPrice = 1600;
-  const totalRevenue = bookings.length * ticketPrice;
+  const totalRevenue = bookings
+    .filter(b => (b.Status || b.status) === "Booked")
+    .length * ticketPrice;
 
   return (
     <div style={styles.container}>
+      {processing && (
+        <div style={styles.overlay}>
+          <div style={styles.loader}></div>
+          <p style={styles.overlayText}>Processing Update...</p>
+        </div>
+      )}
+
       <div style={styles.header}>
         <h1 style={styles.title}>Admin Dashboard</h1>
         <button onClick={loadData} style={styles.refreshBtn}>
@@ -39,7 +79,7 @@ export default function Admin() {
           <span style={styles.statValue}>{bookings.length}</span>
         </div>
         <div style={styles.statCard}>
-          <span style={styles.statLabel}>Total Revenue</span>
+          <span style={styles.statLabel}>Total Revenue (Booked Only)</span>
           <span style={styles.statValue}>Rs. {totalRevenue.toLocaleString()}</span>
         </div>
         <div style={styles.statCard}>
@@ -63,23 +103,34 @@ export default function Admin() {
           </thead>
           <tbody>
             {bookings.length > 0 ? (
-              bookings.map((b, index) => (
-                <tr key={b["Ticket ID"] || index} style={index % 2 === 0 ? {} : styles.altRow}>
-                  <td style={styles.td}>{b["Ticket ID"]?.substring(0, 8)}...</td>
-                  <td style={styles.td}>{b.Timestamp}</td>
-                  <td style={styles.td}><strong>{b.Name}</strong></td>
-                  <td style={styles.td}>{b.Email}</td>
-                  <td style={styles.td}>{b.Phone}</td>
-                  <td style={styles.td}>
-                    <span style={styles.badge(b.Status)}>{b.Status}</span>
-                  </td>
-                  <td style={styles.td}>
-                    <span style={{ color: b.Attendance === "TRUE" ? "#10b981" : "#ef4444", fontWeight: "600" }}>
-                      {b.Attendance === "TRUE" ? "PRESENT" : "ABSENT"}
-                    </span>
-                  </td>
-                </tr>
-              ))
+              bookings.map((b, index) => {
+                const bStatus = b.Status || b.status;
+                const bTicketId = b["Ticket ID"] || b.ticketId;
+                return (
+                  <tr key={bTicketId || index} style={index % 2 === 0 ? {} : styles.altRow}>
+                    <td style={styles.td}>{bTicketId?.substring(0, 8)}...</td>
+                    <td style={styles.td}>{b.Timestamp || b.timestamp}</td>
+                    <td style={styles.td}><strong>{b.Name || b.name}</strong></td>
+                    <td style={styles.td}>{b.Email || b.email}</td>
+                    <td style={styles.td}>{b.Phone || b.phone}</td>
+                    <td style={styles.td}>
+                      <select
+                        style={styles.statusSelect(bStatus)}
+                        value={bStatus}
+                        onChange={(e) => handleStatusChange(bTicketId, bStatus, e.target.value)}
+                      >
+                        <option value="Booked">Booked</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    </td>
+                    <td style={styles.td}>
+                      <span style={{ color: b.Attendance === "TRUE" ? "#10b981" : "#ef4444", fontWeight: "600" }}>
+                        {b.Attendance === "TRUE" ? "PRESENT" : "ABSENT"}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan="7" style={{ ...styles.td, textAlign: "center", padding: "40px" }}>
@@ -95,6 +146,34 @@ export default function Admin() {
 }
 
 const styles = {
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255,255,255,0.8)",
+    zIndex: 1000,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    backdropFilter: "blur(4px)"
+  },
+  overlayText: {
+    marginTop: "20px",
+    color: "#1a0c2d",
+    fontWeight: "600",
+    fontSize: "18px"
+  },
+  loader: {
+    width: "48px",
+    height: "48px",
+    border: "5px solid #edf2f7",
+    borderBottomColor: "#1a0c2d",
+    borderRadius: "50%",
+    animation: "rotation 1s linear infinite",
+  },
   container: {
     paddingBottom: "40px"
   },
@@ -178,12 +257,25 @@ const styles = {
   altRow: {
     backgroundColor: "#fdfdfd"
   },
-  badge: (status) => ({
+  statusSelect: (status) => ({
     padding: "4px 10px",
     borderRadius: "20px",
     fontSize: "12px",
     fontWeight: "700",
-    backgroundColor: status === "Booked" ? "#e0f2fe" : "#f1f5f9",
-    color: status === "Booked" ? "#0369a1" : "#475569"
+    border: "1px solid #edf2f7",
+    cursor: "pointer",
+    backgroundColor: status === "Booked" ? "#e0f2fe" : "#fee2e2",
+    color: status === "Booked" ? "#0369a1" : "#dc2626",
+    outline: "none"
   })
 };
+
+// Global styles for animation
+const styleSheet = document.createElement("style");
+styleSheet.innerText = `
+  @keyframes rotation {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(styleSheet);

@@ -3,12 +3,13 @@
     display: flex;
     width: 100%;
     max-width: 2150px;
-    height: 235px; /* Matched to standard boarding pass ratio */
-    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    height: 235px;
+    /* Matched to standard boarding pass ratio */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
     border-radius: 20px;
     overflow: hidden;
     margin: 30px auto;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif;
     background: transparent;
 }
 
@@ -18,15 +19,18 @@
 
 /* --- LEFT SECTION (Purple) --- */
 .left-section {
-    flex: 2.8; /* Gives slightly more space to main section */
-    background-color: #120822; /* Darker navy/purple from image */
+    flex: 2.8;
+    /* Gives slightly more space to main section */
+    background-color: #120822;
+    /* Darker navy/purple from image */
     color: white;
     padding: 30px 40px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     position: relative;
-    border-right: 2px dashed rgba(255,255,255,0.2); /* Subtle separator line */
+    border-right: 2px dashed rgba(255, 255, 255, 0.2);
+    /* Subtle separator line */
 }
 
 /* Header Row layout */
@@ -40,6 +44,7 @@
 .title-block {
     flex: 1;
 }
+
 .main-title {
     font-size: 1.5em;
     font-weight: 600;
@@ -47,6 +52,7 @@
     margin: 0 0 8px 0;
     letter-spacing: 1px;
 }
+
 .sub-title {
     font-size: 1.1em;
     font-weight: 400;
@@ -62,17 +68,19 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -10px; /* Slight lift */
+    margin-top: -10px;
+    /* Slight lift */
 }
 
 .plane-img {
-    width: 140px; /* Adjust size */
+    width: 140px;
+    /* Adjust size */
     height: auto;
     /* This removes the black background from the image! */
-    mix-blend-mode: screen; 
+    mix-blend-mode: screen;
     opacity: 1;
     /* The provided image is already diagonal, so minimal rotation needed */
-    transform: rotate(-11deg); 
+    transform: rotate(-11deg);
 }
 
 /* University Text */
@@ -84,6 +92,7 @@
     color: #eee;
     letter-spacing: 0.5px;
 }
+
 .university-block p {
     margin: 0;
 }
@@ -102,7 +111,8 @@
 
 .venue-item {
     flex: 2;
-    padding: 0 40px; /* Spacing around center item */
+    padding: 0 40px;
+    /* Spacing around center item */
 }
 
 .label {
@@ -169,14 +179,16 @@
     margin-top: -35px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center the text under QR if text exists */
+    align-items: center;
+    /* Center the text under QR if text exists */
 }
 
 .limited-text {
     font-size: 0.5em;
     color: #000;
     text-align: center;
-    width: 100%; /* Matches QR width approx */
+    width: 100%;
+    /* Matches QR width approx */
 }
 
 /* --- Responsive Adjustments --- */
@@ -187,13 +199,13 @@
         width: 100%;
         max-width: 500px;
     }
-    
+
     .left-section {
         border-right: none;
-        border-bottom: 2px dashed rgba(255,255,255,0.2);
+        border-bottom: 2px dashed rgba(255, 255, 255, 0.2);
         padding: 25px;
     }
-    
+
     .header-row {
         flex-direction: column;
         align-items: center;
@@ -212,17 +224,18 @@
         text-align: left;
         margin-top: 20px;
     }
-    
+
     .venue-item {
         padding: 0;
     }
 
     .right-section {
         padding: 25px;
-        flex-direction: row; /* Horizontal layout for stub on mobile */
+        flex-direction: row;
+        /* Horizontal layout for stub on mobile */
         align-items: center;
     }
-    
+
     .qr-block {
         align-items: center;
     }
@@ -230,42 +243,47 @@
 
 /* --- PRINT STYLES --- */
 @media print {
-  /* 1. Force Background Colors & Images */
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    color-adjust: exact !important;
-  }
 
-  /* 2. Hide Buttons, Inputs, and other UI clutter */
-  button, 
-  nav, 
-  form, 
-  .no-print {
-    display: none !important;
-  }
+    /* 1. Force Background Colors & Images */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
 
-  /* 3. Page Setup */
-  body {
-    background: white; /* Ensure the page background is white */
-    margin: 0;
-    padding: 0;
-  }
+    /* 2. Hide Buttons, Inputs, and other UI clutter */
+    button,
+    nav,
+    form,
+    .no-print {
+        display: none !important;
+    }
 
-  /* 4. Ticket Positioning */
-  .ticket-container {
-    margin: 20px auto !important; /* Center the ticket */
-    box-shadow: none !important; /* Remove shadow for cleaner print */
-    page-break-inside: avoid; /* Don't cut ticket in half */
-    
-    /* Ensure flexbox still works in print */
-    display: flex !important; 
-  }
+    /* 3. Page Setup */
+    body {
+        background: white;
+        /* Ensure the page background is white */
+        margin: 0;
+        padding: 0;
+    }
 
-  /* Fix for the Left Section background specifically */
-  .left-section {
-    background-color: #120822 !important;
-    /* Force white text on the dark background */
-    color: white !important; 
-  }
+    /* 4. Ticket Positioning */
+    .ticket-container {
+        margin: 20px auto !important;
+        /* Center the ticket */
+        box-shadow: none !important;
+        /* Remove shadow for cleaner print */
+        page-break-inside: avoid;
+        /* Don't cut ticket in half */
+
+        /* Ensure flexbox still works in print */
+        display: flex !important;
+    }
+
+    /* Fix for the Left Section background specifically */
+    .left-section {
+        background-color: #120822 !important;
+        /* Force white text on the dark background */
+        color: white !important;
+    }
 }

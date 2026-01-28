@@ -17,7 +17,7 @@ export default function Booking() {
       if (res.status === "success") {
         setTicketId(res.ticketId);
       } else {
-        alert("Booking failed! Please try again.");
+        alert(res.message || "Booking failed! Please try again.");
       }
     } catch (error) {
       console.error(error);
@@ -29,7 +29,7 @@ export default function Booking() {
   // --- DOWNLOAD FUNCTION ---
   const downloadTicket = async () => {
     const element = document.getElementById("ticket-node"); // 1. Finds the specific div
-    
+
     if (!element) {
       alert("Could not find ticket to download");
       return;
@@ -38,8 +38,8 @@ export default function Booking() {
     const canvas = await html2canvas(element, {
       scale: 3, // 3x Resolution for crisp text
       windowWidth: 1600, // Fakes a desktop view so it doesn't stack vertically
-      backgroundColor: null, 
-      useCORS: true 
+      backgroundColor: null,
+      useCORS: true
     });
 
     const image = canvas.toDataURL("image/png");
@@ -54,17 +54,17 @@ export default function Booking() {
     return (
       <div style={styles.container}>
         <h2 style={{ color: "#1a0c2d", marginBottom: "20px" }}>🎉 Booking Confirmed!</h2>
-        
+
         {/* --- CRITICAL FIX: Wrapped Ticket in a div with ID --- */}
         <div id="ticket-node" style={{ padding: '10px' }}>
-            <Ticket name={form.name} ticketId={ticketId} />
+          <Ticket name={form.name} ticketId={ticketId} />
         </div>
 
         <div style={{ marginTop: "30px", display: "flex", gap: "15px", flexWrap: "wrap", justifyContent: "center" }}>
           <button onClick={downloadTicket} style={styles.primaryBtn}>
             📥 Download Ticket
           </button>
-          
+
           <button onClick={() => window.location.reload()} style={styles.secondaryBtn}>
             Book Another
           </button>
@@ -77,7 +77,7 @@ export default function Booking() {
   return (
     <div style={styles.formCard}>
       <h1 style={{ textAlign: "center", color: "#333", marginBottom: "20px" }}>University Event Booking</h1>
-      
+
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
         <input
           required
@@ -101,8 +101,8 @@ export default function Booking() {
           onChange={(e) => setForm({ ...form, phone: e.target.value })}
           style={styles.input}
         />
-        
-        <button disabled={loading} style={{...styles.primaryBtn, width: '100%', marginTop: '10px', opacity: loading ? 0.7 : 1}}>
+
+        <button disabled={loading} style={{ ...styles.primaryBtn, width: '100%', marginTop: '10px', opacity: loading ? 0.7 : 1 }}>
           {loading ? "Processing..." : "Get Ticket"}
         </button>
       </form>
@@ -113,26 +113,26 @@ export default function Booking() {
 // Cleaned up styles object
 const styles = {
   container: {
-    display: "flex", 
-    flexDirection: "column", 
-    alignItems: "center", 
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     padding: "40px 20px",
     background: "#f4f4f4",
     minHeight: "100vh"
   },
   formCard: {
-    maxWidth: "500px", 
-    margin: "50px auto", 
-    padding: "30px", 
-    boxShadow: "0 4px 15px rgba(0,0,0,0.1)", 
+    maxWidth: "500px",
+    margin: "50px auto",
+    padding: "30px",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
     borderRadius: "10px",
-    background: "white" 
+    background: "white"
   },
-  input: { 
-    padding: "12px", 
-    fontSize: "16px", 
-    borderRadius: "5px", 
-    border: "1px solid #ddd" 
+  input: {
+    padding: "12px",
+    fontSize: "16px",
+    borderRadius: "5px",
+    border: "1px solid #ddd"
   },
   primaryBtn: {
     padding: "12px 24px",
