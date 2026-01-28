@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9PtGF8LHp5_3BXMQJXc-Aq3r0e4hDkink-a_j7OdBgwfKkou5gYErNnZGhb21JkDK5A/exec"; 
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxIibVSaQnLfCt4G7e4et-x67gOlT8wKFVXnSnxtsD6-SgL3ju9fwSenuBVXGQ2eGZcuA/exec"; 
 
 export const api = {
   bookTicket: async (formData) => {
