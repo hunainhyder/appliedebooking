@@ -23,11 +23,9 @@ export const api = {
   },
 
   getBookings: async (adminSecret = API_SECRET) => {
-    const url = `${SCRIPT_URL}?action=get_all_bookings&secret=${adminSecret}`;
-    const response = await fetch(url, {
-      method: "GET",
-      body: JSON.stringify({ adminSecret }),
-    });
+    const url = `${SCRIPT_URL}?action=get_all_bookings&secret=${encodeURIComponent(adminSecret)}`;
+
+    const response = await fetch(url);
     return await response.json();
   },
 
