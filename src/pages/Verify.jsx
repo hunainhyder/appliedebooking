@@ -58,7 +58,7 @@ export default function Verify() {
       <div style={styles.statusSection}>
         <div style={styles.statusCard}>
           <span style={styles.statusLabel}>Booking Status</span>
-          <span style={styles.statusValue}>{data.status}</span>
+          <span style={styles.statusValue(false)}>{data.status}</span>
         </div>
         <div style={styles.statusCard}>
           <span style={styles.statusLabel}>Attendance</span>
@@ -67,7 +67,7 @@ export default function Verify() {
           </span>
         </div>
       </div>
-      
+
       <div style={styles.ticketSection}>
         <Ticket name={data.name} ticketId={id} />
       </div>

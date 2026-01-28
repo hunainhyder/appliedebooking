@@ -7,11 +7,11 @@ const Ticket = ({ name, ticketId, date = "09.02.2026", time = "11:00 AM - 4:00 P
   return (
     <div className="ticket-container">
       <div className="left-section">
-        
+
         <div className="header-row">
           <div className="title-block">
-            <h1 className="main-title">BATCH OF 22</h1>
-            <h2 className="sub-title">ANNUAL CELEBRATION’ 26</h2>
+            <h1 className="main-title">ANNUAL CELEBRATION</h1>
+            <h2 className="sub-title">BATCH OF 22</h2>
           </div>
 
           <div className="icon-block">
@@ -50,7 +50,7 @@ const Ticket = ({ name, ticketId, date = "09.02.2026", time = "11:00 AM - 4:00 P
             <span className="stub-label">NAME:</span>
             <span className="stub-value highlight-name">{name || "GUEST"}</span>
           </div>
-          
+
           <div className="stub-group">
             <span className="stub-label">FLIGHT:</span>
             <span className="stub-value">{ticketId}</span>
@@ -68,12 +68,12 @@ const Ticket = ({ name, ticketId, date = "09.02.2026", time = "11:00 AM - 4:00 P
         </div>
 
         <div className="qr-block">
-          <QRCode 
-             value={verificationLink} 
-             size={60} 
-             bgColor="#FFFFFF"
-             fgColor="#000000"
-             style={{ height: "auto", maxWidth: "80px", width: "100%" }}
+          <QRCode
+            value={verificationLink}
+            size={60}
+            bgColor="#FFFFFF"
+            fgColor="#000000"
+            style={{ height: "auto", maxWidth: "80px", width: "100%" }}
           />
         </div>
       </div>
