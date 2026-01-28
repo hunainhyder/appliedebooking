@@ -24,7 +24,10 @@ export const api = {
 
   getBookings: async (adminSecret = API_SECRET) => {
     const url = `${SCRIPT_URL}?action=get_all_bookings&secret=${adminSecret}`;
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: "GET",
+      body: JSON.stringify({ action: "mark_attendance", ticketId, adminSecret }),
+    });
     return await response.json();
   },
 
