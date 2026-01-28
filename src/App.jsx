@@ -27,17 +27,17 @@ function App() {
 
       <div className="container" style={styles.container}>
         <Routes>
-          <Route 
-            path="/login" 
-            element={isLoggedIn ? <Navigate to="/" /> : <Login setAuth={setIsLoggedIn} />} 
+          <Route
+            path="/login"
+            element={isLoggedIn ? <Navigate to="/" /> : <Login setAuth={setIsLoggedIn} />}
           />
-          <Route 
-            path="/" 
-            element={isLoggedIn ? <Booking /> : <Navigate to="/login" />} 
+          <Route
+            path="/"
+            element={isLoggedIn ? <Booking /> : <Navigate to="/login" />}
           />
-          <Route 
-            path="/admin" 
-            element={isLoggedIn ? <Admin /> : <Navigate to="/login" />} 
+          <Route
+            path="/admin"
+            element={isLoggedIn ? <Admin /> : <Navigate to="/login" />}
           />
           <Route path="/verify/:id" element={<Verify />} />
           <Route path="*" element={<Navigate to={isLoggedIn ? "/" : "/login"} />} />
@@ -49,40 +49,65 @@ function App() {
 
 const styles = {
   nav: {
-    padding: '1.2rem 2rem',
-    backgroundColor: '#fff',
-    borderBottom: '1px solid #edf2f7',
+    padding: '1rem 2rem',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderBottom: '1px solid #f3f4f6',
     marginBottom: '2rem',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+    backdropFilter: 'blur(10px)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 100,
   },
   navLinks: {
     display: 'flex',
-    gap: '30px'
+    gap: '32px'
   },
   link: {
     color: '#1a0c2d',
     textDecoration: 'none',
-    fontWeight: '600',
-    fontSize: '15px'
+    fontWeight: '700',
+    fontSize: '14px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    transition: 'color 0.2s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px'
   },
   logoutBtn: {
-    padding: '8px 16px',
-    backgroundColor: '#fef2f2',
-    color: '#dc2626',
-    border: '1px solid #fecaca',
-    borderRadius: '6px',
+    padding: '10px 20px',
+    backgroundColor: '#fff',
+    color: '#ef4444',
+    border: '2px solid #fee2e2',
+    borderRadius: '12px',
     cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: '14px'
+    fontWeight: '700',
+    fontSize: '13px',
+    transition: 'all 0.2s',
+    textTransform: 'uppercase',
   },
   container: {
-    maxWidth: '1100px',
+    maxWidth: '1280px',
     margin: '0 auto',
-    padding: '1rem'
+    padding: '0 1rem'
   }
 };
+
+// CSS for navbar link hover
+const styleSheet = document.createElement("style");
+styleSheet.innerText = `
+  a:hover {
+    color: #4c1d95 !important;
+  }
+  button:hover {
+    background-color: #fef2f2 !important;
+    border-color: #fecaca !important;
+  }
+`;
+document.head.appendChild(styleSheet);
 
 export default App;

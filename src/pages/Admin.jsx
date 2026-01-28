@@ -67,79 +67,90 @@ export default function Admin() {
       )}
 
       <div style={styles.header}>
-        <h1 style={styles.title}>Admin Dashboard</h1>
-        <button onClick={loadData} style={styles.refreshBtn}>
+        <h1 className="admin-title" style={styles.title}>Admin Dashboard</h1>
+        <button className="admin-refresh-btn" onClick={loadData} style={styles.refreshBtn}>
           {loading ? "Loading..." : "🔄 Refresh Data"}
         </button>
       </div>
 
       <div style={styles.statsRow}>
-        <div style={styles.statCard}>
+        <div className="admin-stat-card" style={styles.statCard}>
           <span style={styles.statLabel}>Total Bookings</span>
-          <span style={styles.statValue}>{bookings.length}</span>
+          <span className="admin-stat-value" style={styles.statValue}>{bookings.length}</span>
         </div>
-        <div style={styles.statCard}>
+        <div className="admin-stat-card" style={styles.statCard}>
           <span style={styles.statLabel}>Total Revenue (Booked Only)</span>
-          <span style={styles.statValue}>Rs. {totalRevenue.toLocaleString()}</span>
+          <span className="admin-stat-value" style={styles.statValue}>Rs. {totalRevenue.toLocaleString()}</span>
         </div>
-        <div style={styles.statCard}>
+        <div className="admin-stat-card" style={styles.statCard}>
           <span style={styles.statLabel}>Ticket Price</span>
-          <span style={styles.statValue}>Rs. {ticketPrice}</span>
+          <span className="admin-stat-value" style={styles.statValue}>Rs. {ticketPrice}</span>
         </div>
       </div>
 
-      <div style={styles.tableContainer}>
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Ticket ID</th>
-              <th style={styles.th}>Timestamp</th>
-              <th style={styles.th}>Name</th>
-              <th style={styles.th}>Email</th>
-              <th style={styles.th}>Phone</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Attendance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings.length > 0 ? (
-              bookings.map((b, index) => {
-                const bStatus = b.Status || b.status;
-                const bTicketId = b["Ticket ID"] || b.ticketId;
-                return (
-                  <tr key={bTicketId || index} style={index % 2 === 0 ? {} : styles.altRow}>
-                    <td style={styles.td}>{bTicketId?.substring(0, 8)}...</td>
-                    <td style={styles.td}>{b.Timestamp || b.timestamp}</td>
-                    <td style={styles.td}><strong>{b.Name || b.name}</strong></td>
-                    <td style={styles.td}>{b.Email || b.email}</td>
-                    <td style={styles.td}>{b.Phone || b.phone}</td>
-                    <td style={styles.td}>
-                      <select
-                        style={styles.statusSelect(bStatus)}
-                        value={bStatus}
-                        onChange={(e) => handleStatusChange(bTicketId, bStatus, e.target.value)}
-                      >
-                        <option value="Booked">Booked</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
-                    </td>
-                    <td style={styles.td}>
-                      <span style={{ color: b.Attendance === "TRUE" ? "#10b981" : "#ef4444", fontWeight: "600" }}>
-                        {b.Attendance === "TRUE" ? "PRESENT" : "ABSENT"}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
+      <div style={styles.tableWrapper}>
+        <div style={styles.tableContainer}>
+          <table style={styles.table}>
+            <thead>
               <tr>
-                <td colSpan="7" style={{ ...styles.td, textAlign: "center", padding: "40px" }}>
-                  {loading ? "Fetching records..." : "No bookings found"}
-                </td>
+                <th style={styles.th}>Ticket ID</th>
+                <th style={styles.th}>Timestamp</th>
+                <th style={styles.th}>Name</th>
+                <th style={styles.th}>Email</th>
+                <th style={styles.th}>Phone</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Attendance</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {bookings.length > 0 ? (
+                bookings.map((b, index) => {
+                  const bStatus = b.Status || b.status;
+                  const bTicketId = b["Ticket ID"] || b.ticketId;
+                  return (
+                    <tr key={bTicketId || index} style={index % 2 === 0 ? {} : styles.altRow}>
+                      <td className="ticket-id-cell" style={styles.td}>{bTicketId?.substring(0, 12)}...</td>
+                      <td style={styles.td}>{b.Timestamp || b.timestamp}</td>
+                      <td style={styles.td}><strong>{b.Name || b.name}</strong></td>
+                      <td style={styles.td}>{b.Email || b.email}</td>
+                      <td style={styles.td}>{b.Phone || b.phone}</td>
+                      <td style={styles.td}>
+                        <select
+                          className="status-select"
+                          style={styles.statusSelect(bStatus)}
+                          value={bStatus}
+                          onChange={(e) => handleStatusChange(bTicketId, bStatus, e.target.value)}
+                        >
+                          <option value="Booked">Booked</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                      <td style={styles.td}>
+                        <span style={{
+                          color: b.Attendance === "TRUE" ? "#16a34a" : "#dc2626",
+                          fontWeight: "800",
+                          fontSize: "12px",
+                          backgroundColor: b.Attendance === "TRUE" ? "#f0fdf4" : "#fef2f2",
+                          padding: "4px 10px",
+                          borderRadius: "6px",
+                          textTransform: "uppercase"
+                        }}>
+                          {b.Attendance === "TRUE" ? "PRESENT" : "ABSENT"}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="7" style={{ ...styles.td, textAlign: "center", padding: "60px" }}>
+                    {loading ? "Fetching records..." : "No bookings found"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -152,130 +163,193 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(255,255,255,0.8)",
+    backgroundColor: "rgba(255,255,255,0.85)",
     zIndex: 1000,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    backdropFilter: "blur(4px)"
+    backdropFilter: "blur(8px)"
   },
   overlayText: {
-    marginTop: "20px",
+    marginTop: "24px",
     color: "#1a0c2d",
-    fontWeight: "600",
-    fontSize: "18px"
+    fontWeight: "700",
+    fontSize: "20px"
   },
   loader: {
-    width: "48px",
-    height: "48px",
-    border: "5px solid #edf2f7",
+    width: "56px",
+    height: "56px",
+    border: "6px solid #f3f4f6",
     borderBottomColor: "#1a0c2d",
     borderRadius: "50%",
     animation: "rotation 1s linear infinite",
   },
   container: {
-    paddingBottom: "40px"
+    padding: "0 20px 60px",
+    maxWidth: "1200px",
+    margin: "0 auto",
   },
   header: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "30px"
+    marginBottom: "40px",
+    paddingTop: "20px",
+    gap: "20px",
+    flexWrap: "wrap",
   },
   title: {
-    fontSize: "28px",
-    fontWeight: "800",
+    fontSize: "32px",
+    fontWeight: "900",
     color: "#1a0c2d",
-    margin: 0
+    margin: 0,
+    letterSpacing: "-1px",
   },
   refreshBtn: {
-    padding: "10px 20px",
+    padding: "12px 24px",
     backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
+    border: "2px solid #e5e7eb",
+    borderRadius: "12px",
     cursor: "pointer",
-    fontWeight: "600"
+    fontWeight: "700",
+    fontSize: "15px",
+    color: "#374151",
+    transition: "all 0.3s ease",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
   },
   statsRow: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "30px",
-    flexWrap: "wrap"
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "24px",
+    marginBottom: "48px",
   },
   statCard: {
-    flex: 1,
-    minWidth: "200px",
     backgroundColor: "#fff",
-    padding: "24px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 6px rgba(0,0,0,0.02)",
-    border: "1px solid #edf2f7",
+    padding: "32px",
+    borderRadius: "24px",
+    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+    border: "1px solid #f3f4f6",
     display: "flex",
     flexDirection: "column",
-    gap: "8px"
+    gap: "12px",
+    transition: "transform 0.3s ease",
   },
   statLabel: {
-    fontSize: "14px",
-    color: "#718096",
-    fontWeight: "600",
+    fontSize: "13px",
+    color: "#6b7280",
+    fontWeight: "800",
     textTransform: "uppercase",
-    letterSpacing: "0.05em"
+    letterSpacing: "0.1em"
   },
   statValue: {
-    fontSize: "24px",
-    color: "#1a202c",
-    fontWeight: "800"
+    fontSize: "32px",
+    color: "#1a0c2d",
+    fontWeight: "900"
+  },
+  tableWrapper: {
+    width: "100%",
+    overflowX: "auto",
+    borderRadius: "24px",
+    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    backgroundColor: "#fff",
+    border: "1px solid #f3f4f6",
   },
   tableContainer: {
-    backgroundColor: "#fff",
-    borderRadius: "12px",
-    overflow: "hidden",
-    boxShadow: "0 4px 6px rgba(0,0,0,0.02)",
-    border: "1px solid #edf2f7"
+    minWidth: "100%", // Ensures it takes full width of scroll container
   },
   table: {
     width: "100%",
-    borderCollapse: "collapse",
-    textAlign: "left"
+    borderCollapse: "separate",
+    borderSpacing: 0,
+    textAlign: "left",
   },
   th: {
-    padding: "16px 20px",
-    backgroundColor: "#f8fafc",
-    borderBottom: "1px solid #edf2f7",
-    fontSize: "13px",
-    fontWeight: "700",
-    color: "#4a5568",
-    textTransform: "uppercase"
+    padding: "20px 24px",
+    backgroundColor: "#f9fafb",
+    borderBottom: "2px solid #f3f4f6",
+    fontSize: "12px",
+    fontWeight: "800",
+    color: "#4b5563",
+    textTransform: "uppercase",
+    whiteSpace: "nowrap",
+    letterSpacing: "0.05em",
   },
   td: {
-    padding: "16px 20px",
-    fontSize: "14px",
-    color: "#2d3748",
-    borderBottom: "1px solid #f1f5f9"
+    padding: "20px 24px",
+    fontSize: "15px",
+    color: "#111827",
+    borderBottom: "1px solid #f3f4f6",
+    verticalAlign: "middle",
   },
   altRow: {
-    backgroundColor: "#fdfdfd"
+    backgroundColor: "#fcfcfc"
   },
   statusSelect: (status) => ({
-    padding: "4px 10px",
-    borderRadius: "20px",
+    padding: "6px 14px",
+    borderRadius: "9999px",
     fontSize: "12px",
-    fontWeight: "700",
-    border: "1px solid #edf2f7",
+    fontWeight: "800",
+    border: "none",
     cursor: "pointer",
-    backgroundColor: status === "Booked" ? "#e0f2fe" : "#fee2e2",
-    color: status === "Booked" ? "#0369a1" : "#dc2626",
-    outline: "none"
+    backgroundColor: status === "Booked" ? "#dcfce7" : "#fee2e2",
+    color: status === "Booked" ? "#166534" : "#991b1b",
+    outline: "none",
+    transition: "all 0.2s ease",
+    textTransform: "uppercase",
   })
 };
 
-// Global styles for animation
+// Global styles for animation and responsiveness
 const styleSheet = document.createElement("style");
 styleSheet.innerText = `
   @keyframes rotation {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+  }
+
+  .admin-refresh-btn:hover {
+    border-color: #1a0c2d !important;
+    color: #1a0c2d !important;
+    transform: translateY(-2px);
+  }
+
+  /* Custom Scrollbar for Table */
+  div::-webkit-scrollbar {
+    height: 8px;
+  }
+  div::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  div::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+  }
+  div::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+
+  /* Responsive Stats */
+  @media (max-width: 640px) {
+    .admin-title {
+      font-size: 24px !important;
+    }
+    .admin-stat-card {
+      padding: 20px !important;
+    }
+    .admin-stat-value {
+      font-size: 24px !important;
+    }
+  }
+
+  /* Table Cell Styling */
+  .ticket-id-cell {
+    font-family: monospace;
+    color: #6b7280;
+    font-size: 13px;
   }
 `;
 document.head.appendChild(styleSheet);
