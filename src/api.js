@@ -44,5 +44,17 @@ export const api = {
       body: JSON.stringify({ action: "book_ticket", ticketId, adminSecret }),
     });
     return await response.json();
+  },
+
+  sendInvite: async (ticketId, adminSecret = API_SECRET) => {
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "send_invite",
+        ticketId: ticketId,
+        adminSecret: adminSecret
+      }),
+    });
+    return await response.json();
   }
 };

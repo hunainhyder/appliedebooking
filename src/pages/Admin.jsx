@@ -114,6 +114,19 @@ export default function Admin() {
                       <td style={styles.td}><strong>{b.Name || b.name}</strong></td>
                       <td style={styles.td}>{b.Email || b.email}</td>
                       <td style={styles.td}>{b.Phone || b.phone}</td>
+                      <td>
+                        <button
+                          onClick={async () => {
+                            if (confirm(`Send email to ${b.Name}?`)) {
+                              const res = await api.sendInvite(b["Ticket ID"]);
+                              alert(res.message);
+                            }
+                          }}
+                          style={{ cursor: "pointer", background: "orange", border: "none", padding: "5px 10px", borderRadius: "4px" }}
+                        >
+                          📧 Send Invite
+                        </button>
+                      </td>
                       <td style={styles.td}>
                         <select
                           className="status-select"
