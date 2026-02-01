@@ -99,7 +99,7 @@ export default function Admin() {
                 <th style={styles.th}>Email</th>
                 <th style={styles.th}>Phone</th>
                 <th style={styles.th}>Status</th>
-                <th style={styles.th}>Attendance</th>
+                <th style={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -114,19 +114,6 @@ export default function Admin() {
                       <td style={styles.td}><strong>{b.Name || b.name}</strong></td>
                       <td style={styles.td}>{b.Email || b.email}</td>
                       <td style={styles.td}>{b.Phone || b.phone}</td>
-                      <td>
-                        <button
-                          onClick={async () => {
-                            if (confirm(`Send email to ${b.Name}?`)) {
-                              const res = await api.sendInvite(b["Ticket ID"]);
-                              alert(res.message);
-                            }
-                          }}
-                          style={{ cursor: "pointer", background: "orange", border: "none", padding: "5px 10px", borderRadius: "4px" }}
-                        >
-                          📧 Send Invite
-                        </button>
-                      </td>
                       <td style={styles.td}>
                         <select
                           className="status-select"
@@ -139,17 +126,17 @@ export default function Admin() {
                         </select>
                       </td>
                       <td style={styles.td}>
-                        <span style={{
-                          color: b.Attendance === "TRUE" ? "#16a34a" : "#dc2626",
-                          fontWeight: "800",
-                          fontSize: "12px",
-                          backgroundColor: b.Attendance === "TRUE" ? "#f0fdf4" : "#fef2f2",
-                          padding: "4px 10px",
-                          borderRadius: "6px",
-                          textTransform: "uppercase"
-                        }}>
-                          {b.Attendance === "TRUE" ? "PRESENT" : "ABSENT"}
-                        </span>
+                        <button
+                          onClick={async () => {
+                            if (confirm(`Send email to ${b.Name}?`)) {
+                              const res = await api.sendInvite(b["Ticket ID"]);
+                              alert(res.message);
+                            }
+                          }}
+                          style={{ cursor: "pointer", background: "#1618a386", color: "white", border: "none", padding: "5px 10px", borderRadius: "4px" }}
+                        >
+                          Send Invite
+                        </button>
                       </td>
                     </tr>
                   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Ticket from "../components/Ticket";
+import html2canvas from "html2canvas";
 
 const checkTicket = async (id) => {
   const SCRIPT_URL = import.meta.env.VITE_API_URL;
@@ -30,6 +31,32 @@ export default function Verify() {
     });
   }, [id]);
 
+  const downloadTicket = async () => {
+    const element = document.getElementById("ticket-node");
+    if (!element) {
+      alert("Could not find ticket to download");
+      return;
+    }
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 3,
+        windowWidth: 1600,
+        backgroundColor: null,
+        useCORS: true
+      });
+
+      const image = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = image;
+      link.download = `Ticket-${data.name}.png`;
+      link.click();
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Failed to download ticket. Please try again.");
+    }
+  };
+
   if (loading) return (
     <div style={styles.center}>
       <div style={styles.loader}></div>
@@ -55,21 +82,49 @@ export default function Verify() {
         </div>
       </div>
 
-      <div style={styles.statusSection}>
-        <div style={styles.statusCard}>
-          <span style={styles.statusLabel}>Booking Status</span>
-          <span style={styles.statusValue(false)}>{data.status}</span>
-        </div>
-        <div style={styles.statusCard}>
-          <span style={styles.statusLabel}>Attendance</span>
-          <span style={styles.statusValue(data.used)}>
-            {data.used ? 'ALREADY CHECKED IN' : 'VALID FOR ENTRY'}
-          </span>
-        </div>
+      <div style={styles.tableContainer}>
+        <h2 style={styles.tableTitle}>Ticket Details</h2>
+        <table style={styles.table}>
+          <tbody>
+            <tr>
+              <td style={styles.tdLabel}>Passenger Name</td>
+              <td style={styles.tdValue}>{data.name}</td>
+            </tr>
+            <tr>
+              <td style={styles.tdLabel}>Ticket ID</td>
+              <td style={styles.tdValue}>{id}</td>
+            </tr>
+            <tr>
+              <td style={styles.tdLabel}>Booking Status</td>
+              <td style={styles.tdValue}>
+                <span style={styles.statusBadge(data.status)}>
+                  {data.status ? data.status.toUpperCase() : "UNKNOWN"}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style={styles.tdLabel}>Attendance</td>
+              <td style={styles.tdValue}>
+                <span style={{ color: data.used ? "#e53e3e" : "#10b981", fontWeight: "bold" }}>
+                  {data.used ? 'ALREADY CHECKED IN' : 'VALID FOR ENTRY'}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <div style={styles.ticketSection}>
-        <Ticket name={data.name} ticketId={id} />
+      <div style={styles.actionSection}>
+        <button onClick={downloadTicket} style={styles.downloadBtn}>
+          📥 Download E-Ticket (Pass)
+        </button>
+      </div>
+
+      {/* Hidden Ticket for Download - Forced PC Style rendering via fixed width container */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '0', width: '1200px' }}>
+        <div id="ticket-node" style={{ padding: '20px', background: 'white' }}>
+          <Ticket name={data.name} ticketId={id} />
+        </div>
       </div>
 
       <div style={styles.footer}>
@@ -119,7 +174,8 @@ const styles = {
   container: {
     maxWidth: "900px",
     margin: "0 auto",
-    padding: "20px"
+    padding: "20px",
+    minHeight: "100vh"
   },
   verifyBadge: {
     display: "flex",
@@ -160,35 +216,70 @@ const styles = {
     fontSize: "13px",
     fontWeight: "600"
   },
-  statusSection: {
-    display: "flex",
-    gap: "20px",
-    marginBottom: "40px"
-  },
-  statusCard: {
-    flex: 1,
-    padding: "20px",
+  tableContainer: {
     backgroundColor: "#fff",
     borderRadius: "12px",
+    padding: "30px",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
     border: "1px solid #edf2f7",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px"
+    marginBottom: "30px",
+    overflowX: "auto"
   },
-  statusLabel: {
-    fontSize: "12px",
-    fontWeight: "700",
+  tableTitle: {
+    margin: "0 0 20px 0",
+    fontSize: "20px",
+    color: "#1a0c2d",
+    borderBottom: "2px solid #f7fafc",
+    paddingBottom: "10px"
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    minWidth: "600px" // Force PC-like width
+  },
+  tdLabel: {
+    padding: "15px",
+    textAlign: "left",
     color: "#718096",
-    textTransform: "uppercase"
+    fontWeight: "600",
+    borderBottom: "1px solid #f7fafc",
+    width: "250px"
   },
-  statusValue: (used) => ({
-    fontSize: "18px",
+  tdValue: {
+    padding: "15px",
+    textAlign: "left",
+    color: "#1a0c2d",
+    fontWeight: "500",
+    borderBottom: "1px solid #f7fafc"
+  },
+  statusBadge: (status = "") => ({
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontSize: "12px",
     fontWeight: "800",
-    color: used ? "#e53e3e" : "#1a0c2d"
+    backgroundColor: status.toLowerCase() === 'booked' ? "#ecfdf5" : "#fff5f5",
+    color: status.toLowerCase() === 'booked' ? "#10b981" : "#e53e3e",
+    border: `1px solid ${status.toLowerCase() === 'booked' ? "#6ee7b7" : "#feb2b2"}`
   }),
-  ticketSection: {
-    transform: "scale(0.95)",
-    transformOrigin: "top center"
+  actionSection: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "20px"
+  },
+  downloadBtn: {
+    backgroundColor: "#1a0c2d",
+    color: "#fff",
+    border: "none",
+    padding: "15px 30px",
+    borderRadius: "8px",
+    fontSize: "16px",
+    fontWeight: "700",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    transition: "all 0.2s ease",
+    boxShadow: "0 4px 12px rgba(26, 12, 45, 0.2)"
   },
   footer: {
     marginTop: "60px",
@@ -199,11 +290,13 @@ const styles = {
 };
 
 // Global styles for animation
-const styleSheet = document.createElement("style");
-styleSheet.innerText = `
-  @keyframes rotation {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;
-document.head.appendChild(styleSheet);
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement("style");
+  styleSheet.innerText = `
+    @keyframes rotation {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(styleSheet);
+}
