@@ -4,6 +4,7 @@ import Booking from "./pages/Booking";
 import Admin from "./pages/Admin";
 import Verify from "./pages/Verify";
 import Login from "./pages/Login";
+import Cancelled from "./pages/Cancelled";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
@@ -20,6 +21,7 @@ function App() {
           <div style={styles.navLinks}>
             <Link to="/" style={styles.link}>🎟️ Create Booking</Link>
             <Link to="/admin" style={styles.link}>📊 Admin Dashboard</Link>
+            <Link to="/cancelled" style={styles.link}>🗑️ Cancelled Bookings</Link>
           </div>
           <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
         </nav>
@@ -38,6 +40,10 @@ function App() {
           <Route
             path="/admin"
             element={isLoggedIn ? <Admin /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/cancelled"
+            element={isLoggedIn ? <Cancelled /> : <Navigate to="/login" />}
           />
           <Route path="/verify/:id" element={<Verify />} />
           <Route path="*" element={<Navigate to={isLoggedIn ? "/" : "/login"} />} />

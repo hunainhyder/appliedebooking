@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
 import { api } from "../api";
+import html2canvas from "html2canvas";
+import Ticket from "../components/Ticket";
+import { useState, useEffect } from "react";
 
 export default function Admin() {
   const [bookings, setBookings] = useState([]);
@@ -52,10 +54,46 @@ export default function Admin() {
     setProcessing(false);
   };
 
+  const downloadTicket = async (ticketId, name) => {
+    const element = document.getElementById(`ticket-${ticketId}`);
+
+    if (!element) {
+      alert("Ticket not found");
+      return;
+    }
+
+    const canvas = await html2canvas(element, {
+      scale: 3,
+      backgroundColor: null,
+      useCORS: true,
+      windowWidth: 1600
+    });
+
+    const image = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = `Ticket-${name || ticketId}.png`;
+    link.click();
+  };
+
   const ticketPrice = 1600;
   const totalRevenue = bookings
     .filter(b => (b.Status || b.status) === "Booked")
     .length * ticketPrice;
+
+  const bookedBookings = bookings.filter(
+    b => (b.Status || b.status) === "Booked"
+  );
+
+  const formatDateTime = (value) => {
+    if (!value) return "-";
+
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return "-";
+
+    return `${date.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })}`;
+  };
+
 
   return (
     <div style={styles.container}>
@@ -76,7 +114,7 @@ export default function Admin() {
       <div style={styles.statsRow}>
         <div className="admin-stat-card" style={styles.statCard}>
           <span style={styles.statLabel}>Total Bookings</span>
-          <span className="admin-stat-value" style={styles.statValue}>{bookings.length}</span>
+          <span className="admin-stat-value" style={styles.statValue}>{bookedBookings.length}</span>
         </div>
         <div className="admin-stat-card" style={styles.statCard}>
           <span style={styles.statLabel}>Total Revenue (Booked Only)</span>
@@ -93,7 +131,7 @@ export default function Admin() {
           <table style={styles.table}>
             <thead>
               <tr>
-                <th style={styles.th}>Ticket ID</th>
+                <th style={styles.th}>S. No</th>
                 <th style={styles.th}>Timestamp</th>
                 <th style={styles.th}>Name</th>
                 <th style={styles.th}>Email</th>
@@ -103,14 +141,14 @@ export default function Admin() {
               </tr>
             </thead>
             <tbody>
-              {bookings.length > 0 ? (
-                bookings.map((b, index) => {
+              {bookedBookings.length > 0 ? (
+                bookedBookings.map((b, index) => {
                   const bStatus = b.Status || b.status;
                   const bTicketId = b["Ticket ID"] || b.ticketId;
                   return (
                     <tr key={bTicketId || index} style={index % 2 === 0 ? {} : styles.altRow}>
-                      <td className="ticket-id-cell" style={styles.td}>{bTicketId?.substring(0, 12)}...</td>
-                      <td style={styles.td}>{b.Timestamp || b.timestamp}</td>
+                      <td className="ticket-id-cell" style={styles.td}>{index + 1}</td>
+                      <td style={styles.td}>{formatDateTime(b.Timestamp || b.timestamp)}</td>
                       <td style={styles.td}><strong>{b.Name || b.name}</strong></td>
                       <td style={styles.td}>{b.Email || b.email}</td>
                       <td style={styles.td}>{b.Phone || b.phone}</td>
@@ -137,6 +175,27 @@ export default function Admin() {
                         >
                           Send Invite
                         </button>
+                        <button
+                          onClick={() =>
+                            downloadTicket(
+                              b["Ticket ID"] || b.ticketId,
+                              b.Name || b.name
+                            )
+                          }
+                          style={{
+                            padding: "6px 12px",
+                            background: "white",
+                            color: "#1a0c2d",
+                            border: "1px solid #1a0c2d",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                            fontWeight: "700",
+                            marginRight: "8px"
+                          }}
+                        >
+                          Download Pass
+                        </button>
                       </td>
                     </tr>
                   );
@@ -144,7 +203,7 @@ export default function Admin() {
               ) : (
                 <tr>
                   <td colSpan="7" style={{ ...styles.td, textAlign: "center", padding: "60px" }}>
-                    {loading ? "Fetching records..." : "No bookings found"}
+                    {loading ? "Fetching records..." : "No booked tickets found"}
                   </td>
                 </tr>
               )}
@@ -152,7 +211,27 @@ export default function Admin() {
           </table>
         </div>
       </div>
+
+      {/* Hidden ticket render for download */}
+      <div style={{ position: "absolute", left: "-9999px", top: 0 }}>
+        {bookings.map((b) => {
+          const ticketId = b["Ticket ID"] || b.ticketId;
+          const name = b.Name || b.name;
+
+          return (
+            <div
+              key={ticketId}
+              id={`ticket-${ticketId}`}
+              style={{ padding: "10px" }}
+            >
+              <Ticket name={name} ticketId={ticketId} />
+            </div>
+          );
+        })}
+      </div>
     </div>
+
+
   );
 }
 
