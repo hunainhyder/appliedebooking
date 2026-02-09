@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Ticket from "../components/Ticket";
 import html2canvas from "html2canvas";
+import { api } from "../api";
 
 const checkTicket = async (id) => {
   const SCRIPT_URL = import.meta.env.VITE_API_URL;
@@ -15,6 +16,8 @@ export default function Verify() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [verifying, setVerifying] = useState(false);
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
 
   useEffect(() => {
     setLoading(true);
@@ -30,6 +33,26 @@ export default function Verify() {
       setLoading(false);
     });
   }, [id]);
+
+  const handleAttendance = async () => {
+    if (!isLoggedIn) return;
+
+    if (!confirm(`Mark ${data.name} as Present?`)) return;
+
+    setVerifying(true);
+    try {
+      const res = await api.verifyTicket(id);
+      if (res.status === 'success') {
+        alert("✅ Attendance Marked Successfully!");
+        setData({ ...data, used: 'TRUE', status: 'Checked In' });
+      } else {
+        alert("❌ Error: " + res.message);
+      }
+    } catch (err) {
+      alert("Connection Failed");
+    }
+    setVerifying(false);
+  };
 
   const downloadTicket = async () => {
     const element = document.getElementById("ticket-node");
@@ -118,6 +141,15 @@ export default function Verify() {
         <button onClick={downloadTicket} style={styles.downloadBtn}>
           📥 Download E-Ticket (Pass)
         </button>
+        {isLoggedIn && !data.used && (
+          <button
+            onClick={handleAttendance}
+            disabled={verifying}
+            style={styles.verifyBtn}
+          >
+            {verifying ? "Processing..." : "✅ Mark Attendance"}
+          </button>
+        )}
       </div>
 
       {/* Hidden Ticket for Download - Forced PC Style rendering via fixed width container */}
@@ -135,6 +167,21 @@ export default function Verify() {
 }
 
 const styles = {
+  verifyBtn: {
+    backgroundColor: "#fff",
+    color: "#1a0c2d",
+    border: "1px solid #1a0c2d",
+    padding: "15px 30px",
+    borderRadius: "8px",
+    fontSize: "16px",
+    fontWeight: "700",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    transition: "all 0.2s ease",
+    boxShadow: "0 4px 12px rgba(26, 12, 45, 0.2)"
+  },
   center: {
     display: "flex",
     flexDirection: "column",
